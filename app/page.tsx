@@ -33,6 +33,7 @@ import {
   createSubTask,
   createTask,
   importTaskFromJira,
+  IS_DEMO_MODE,
   listTasks,
   orchestrateTask,
   startTask,
@@ -74,27 +75,27 @@ interface Task {
 function normalizeTasks(records: TaskRecord[]): Task[] {
   const byId = new Map<string, Task>()
 
-  const ensureParent = (rec: TaskRecord) => {
-    const key = rec.task_id
+  const ensureParent = (taskId: string) => {
+    const key = taskId
     if (!byId.has(key)) {
       byId.set(key, {
-        id: rec.id,
-        task_id: rec.task_id,
+        id: key,
+        task_id: key,
         sub_task_id: null,
         task_type: "TASK",
-        description: rec.description ?? "",
-        repo_url: rec.repo_url ?? null,
-        base_branch: rec.base_branch ?? null,
-        status: rec.status,
-        prompt: rec.prompt ?? "",
-        summary: rec.summary ?? null,
-        agent_summary: rec.agent_summary ?? null,
-        jira_task_id: rec.task_id,
-        attachment_path: rec.attachment_path ?? null,
-        additional_json: rec.additional_json ?? null,
+        description: "",
+        repo_url: null,
+        base_branch: null,
+        status: "PENDING",
+        prompt: "",
+        summary: null,
+        agent_summary: null,
+        jira_task_id: key,
+        attachment_path: null,
+        additional_json: null,
         subtasks: [],
-        created_at: rec.created_at,
-        updated_at: rec.updated_at,
+        created_at: undefined,
+        updated_at: undefined,
       })
     }
     return byId.get(key)!
@@ -102,6 +103,8 @@ function normalizeTasks(records: TaskRecord[]): Task[] {
 
   for (const rec of records) {
     if (rec.task_type === "TASK" && !rec.sub_task_id) {
+      const existing = byId.get(rec.task_id)
+      const existingSubtasks = existing?.subtasks ?? []
       byId.set(rec.task_id, {
         id: rec.id,
         task_id: rec.task_id,
@@ -117,13 +120,13 @@ function normalizeTasks(records: TaskRecord[]): Task[] {
         jira_task_id: rec.task_id,
         attachment_path: rec.attachment_path ?? null,
         additional_json: rec.additional_json ?? null,
-        subtasks: [],
+        subtasks: existingSubtasks,
       })
       continue
     }
 
     // Subtasks or tasks without parent present
-    const parent = ensureParent(rec)
+    const parent = ensureParent(rec.task_id)
     parent.subtasks = parent.subtasks || []
     parent.subtasks.push({
       id: rec.id,
@@ -179,6 +182,7 @@ export default function TaskManagementPage() {
   useEffect(() => {
     void loadTasks()
   }, [loadTasks])
+
 
   useEffect(() => {
     const stored = typeof window !== "undefined" ? window.localStorage.getItem(EXPANDED_STORAGE_KEY) : null
@@ -520,6 +524,28 @@ export default function TaskManagementPage() {
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-b from-muted/30 via-background to-muted/20">
+      {/* Demo Mode Banner */}
+      {IS_DEMO_MODE && (
+        <div className="bg-gradient-to-r from-amber-500/90 via-orange-500/90 to-amber-500/90 text-white px-4 py-2.5 text-center text-sm shadow-md">
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <span className="font-medium">Demo Mode:</span>
+            <span>Due to security (personal access tokens) and LLM API costs, this demo uses mocked data from the demo video.</span>
+            <span className="hidden sm:inline">•</span>
+            <span className="text-amber-100">
+              Develop locally using the README in each repo →
+              <a href="https://github.com/805karansaini/e2e-ai-dev-agent/" target="_blank" rel="noreferrer" className="underline hover:text-white ml-1">Backend</a>
+              {" / "}
+              <a href="https://github.com/805karansaini/e2e-ai-dev-agent-frontend" target="_blank" rel="noreferrer" className="underline hover:text-white">Frontend</a>
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Fixed Header */}
       <header className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b shadow-sm">
         <div className="mx-auto max-w-[1600px] px-6 py-4">
@@ -1020,8 +1046,11 @@ export default function TaskManagementPage() {
       <footer className="sticky bottom-0 z-20 bg-background/95 backdrop-blur-sm border-t shadow-[0_-1px_3px_rgba(0,0,0,0.05)]">
         <div className="mx-auto max-w-[1600px] px-6 py-3">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div className="text-sm font-medium text-muted-foreground">
-              E2E AI Dev Agent • Production-grade AI orchestration
+            <div className="text-sm font-medium text-muted-foreground space-y-0.5">
+              <div>E2E AI Dev Agent • Production-grade AI orchestration</div>
+              <div className="text-xs font-normal">
+                To develop the frontend + backend locally, follow the README guides in each repo (links on the right).
+              </div>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <a
