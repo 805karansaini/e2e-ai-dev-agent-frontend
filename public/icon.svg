@@ -1,0 +1,17 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="E2E AI Dev Agent icon">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0EA5E9"/>
+      <stop offset="50%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#14B8A6"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="224" height="224" rx="32" fill="#0F172A"/>
+  <rect x="28" y="28" width="200" height="200" rx="26" fill="url(#g)" opacity="0.12"/>
+  <path d="M70 92h72c18 0 32 14 32 32s-14 32-32 32H70" stroke="url(#g)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M118 76v104" stroke="#E2E8F0" stroke-width="14" stroke-linecap="round" opacity="0.9"/>
+  <circle cx="118" cy="124" r="10" fill="#E2E8F0"/>
+  <circle cx="118" cy="164" r="10" fill="#E2E8F0"/>
+  <path d="M154 124h24M154 164h24" stroke="#E2E8F0" stroke-width="12" stroke-linecap="round" opacity="0.9"/>
+  <text x="50%" y="218" text-anchor="middle" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="18" fill="#E2E8F0" letter-spacing="0.08em">E2E AGENT</text>
+</svg>

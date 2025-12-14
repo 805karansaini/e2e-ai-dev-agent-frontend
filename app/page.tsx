@@ -15,7 +15,19 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { PlayCircle, Zap, Cpu, Plus, Edit, ChevronRight, ChevronDown, Loader2 } from "lucide-react"
+import {
+  PlayCircle,
+  Zap,
+  Cpu,
+  Plus,
+  Edit,
+  ChevronRight,
+  ChevronDown,
+  Loader2,
+  Linkedin,
+  Github,
+  Sparkles,
+} from "lucide-react"
 import {
   autoTask,
   createSubTask,
@@ -507,49 +519,76 @@ export default function TaskManagementPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="mx-auto max-w-[1600px] space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Task Management</h1>
-            <p className="text-muted-foreground mt-1">Manage and execute development tasks</p>
+    <div className="h-screen flex flex-col bg-gradient-to-b from-muted/30 via-background to-muted/20">
+      {/* Fixed Header */}
+      <header className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b shadow-sm">
+        <div className="mx-auto max-w-[1600px] px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">E2E AI Dev Agent</h1>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-500/20 shadow-sm">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    CLINE CLI
+                  </span>
+                </div>
+                <p className="text-muted-foreground text-sm mt-1">
+                  AI-powered task orchestration • GitHub • Jira
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="gap-1.5 shadow-sm" onClick={handleJiraImport}>
+                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm.5 17.5l-5-5 1.5-1.5 3.5 3.5 6.5-6.5 1.5 1.5-8 8z" />
+                </svg>
+                Jira Import
+              </Button>
+              <Button size="sm" className="gap-1.5 shadow-sm" onClick={handleNewTask}>
+                <Plus className="h-3.5 w-3.5" />
+                New Task
+              </Button>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" className="gap-2 bg-transparent" onClick={handleJiraImport}>
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm.5 17.5l-5-5 1.5-1.5 3.5 3.5 6.5-6.5 1.5 1.5-8 8z" />
-              </svg>
-              Import from Jira
-            </Button>
-            <Button className="gap-2" onClick={handleNewTask}>
-              <Plus className="h-4 w-4" />
-              New Task
-            </Button>
+        </div>
+      </header>
+
+      {/* Scrollable Main Content */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-[1600px] px-6 py-5">
+          {error && (
+            <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive mb-5 shadow-sm">
+              {error}
+            </div>
+          )}
+
+          <div className="rounded-xl border bg-card overflow-hidden shadow-lg ring-1 ring-black/5">
+            <Table>
+              <TableHeader className="bg-muted/50">
+                <TableRow>
+                  <TableHead className="w-[140px] font-semibold">Task ID</TableHead>
+                  <TableHead className="font-semibold">Description</TableHead>
+                  <TableHead className="w-[120px] font-semibold">Status</TableHead>
+                  <TableHead className="w-[100px] font-semibold">Type</TableHead>
+                  <TableHead className="w-[120px] font-semibold">Branch</TableHead>
+                  <TableHead className="w-[320px] font-semibold">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>{tasks.map((task) => renderTaskRow(task))}</TableBody>
+            </Table>
+            {tasks.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+                <div className="rounded-full bg-muted p-4 mb-4">
+                  <Cpu className="h-8 w-8" />
+                </div>
+                <p className="text-lg font-medium">No tasks yet</p>
+                <p className="text-sm mt-1">Create a new task or import from Jira to get started</p>
+              </div>
+            )}
           </div>
         </div>
 
-        {error && (
-          <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
-            {error}
-          </div>
-        )}
-
-        <div className="rounded-lg border bg-card">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[140px]">Task ID</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead className="w-[120px]">Status</TableHead>
-                <TableHead className="w-[100px]">Type</TableHead>
-                <TableHead className="w-[120px]">Branch</TableHead>
-                <TableHead className="w-[320px]">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>{tasks.map((task) => renderTaskRow(task))}</TableBody>
-          </Table>
-        </div>
 
         {/* View Modal */}
         <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
@@ -975,7 +1014,56 @@ export default function TaskManagementPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
+      </main>
+
+      {/* Fixed Footer */}
+      <footer className="sticky bottom-0 z-20 bg-background/95 backdrop-blur-sm border-t shadow-[0_-1px_3px_rgba(0,0,0,0.05)]">
+        <div className="mx-auto max-w-[1600px] px-6 py-3">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-sm font-medium text-muted-foreground">
+              E2E AI Dev Agent • Production-grade AI orchestration
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <a
+                className="inline-flex items-center gap-1.5 rounded-md border bg-card px-2.5 py-1 text-xs text-foreground hover:bg-muted transition-colors shadow-sm"
+                href="https://www.linkedin.com/in/805karansaini/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Linkedin className="h-3.5 w-3.5 text-blue-600" />
+                Karan Saini
+              </a>
+              <a
+                className="inline-flex items-center gap-1.5 rounded-md border bg-card px-2.5 py-1 text-xs text-foreground hover:bg-muted transition-colors shadow-sm"
+                href="https://www.linkedin.com/in/kuldeep-kumar-singh/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Linkedin className="h-3.5 w-3.5 text-blue-600" />
+                Kuldeep Singh
+              </a>
+              <a
+                className="inline-flex items-center gap-1.5 rounded-md border bg-card px-2.5 py-1 text-xs text-foreground hover:bg-muted transition-colors shadow-sm"
+                href="https://github.com/805karansaini/e2e-ai-dev-agent/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Github className="h-3.5 w-3.5" />
+                Backend
+              </a>
+              <a
+                className="inline-flex items-center gap-1.5 rounded-md border bg-card px-2.5 py-1 text-xs text-foreground hover:bg-muted transition-colors shadow-sm"
+                href="https://github.com/805karansaini/e2e-ai-dev-agent-frontend"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Github className="h-3.5 w-3.5" />
+                Frontend
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
